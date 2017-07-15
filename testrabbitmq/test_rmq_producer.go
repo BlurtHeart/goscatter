@@ -57,7 +57,7 @@ func publish(amqpURI string, exchange string, queue string, body string) {
 	//创建一个queue
 	q, err := channel.QueueDeclare(
 		queueName, // name
-		false,     // durable
+		true,      // durable, true则在mq服务器挂掉的时候，队列不会丢失
 		false,     // delete when unused
 		false,     // exclusive
 		false,     // no-wait
@@ -76,6 +76,7 @@ func publish(amqpURI string, exchange string, queue string, body string) {
 		false,    // mandatory
 		false,    // immediate
 		amqp.Publishing{
+			DeliveryMode:    amqp.Persistent, // 只有在队列declare声明durable为true时才可以。消息不会丢失。
 			Headers:         amqp.Table{},
 			ContentType:     "text/plain",
 			ContentEncoding: "",
